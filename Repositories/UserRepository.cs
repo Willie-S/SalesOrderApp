@@ -2,7 +2,6 @@
 using SalesOrderApp.Data;
 using SalesOrderApp.Interfaces;
 using SalesOrderApp.Models;
-using SalesOrderApp.Utilities;
 
 namespace SalesOrderApp.Repositories
 {
@@ -24,7 +23,7 @@ namespace SalesOrderApp.Repositories
 
         public async Task<User> GetUserByEmailAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => GeneralHelper.CompareStrings(u.Email, email));
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email.Trim().ToLower() == email.Trim().ToLower());
         }
 
         public async Task<bool> EmailExistsAsync(string email)

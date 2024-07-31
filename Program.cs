@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -44,20 +45,13 @@ namespace SalesOrderApp
             builder.Services.AddScoped<IDbTransactionService, DbTransactionService>();
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
-            // Configure JWT authentication
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+            // Configure Cookie authentication
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                        ValidAudience = builder.Configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-                    };
+                    options.LoginPath = "/Auth/Login"; // Path to login page
+                    options.LogoutPath = "/Auth/Logout"; // Path to logout page
+                    options.AccessDeniedPath = "/Auth/AccessDenied"; // Path to access denied page
                 });
 
             // Add authorization policies
