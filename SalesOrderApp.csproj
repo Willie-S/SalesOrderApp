@@ -7,6 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\UserRoles.xml" />
+    <None Remove="Data\Users.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\UserRoles.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Users.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ViewModels\" />
   </ItemGroup>
 
