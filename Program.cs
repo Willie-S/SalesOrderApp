@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SalesOrderApp.Data;
@@ -31,16 +32,17 @@ namespace SalesOrderApp
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SalesOrderAppDb")));
             builder.Services.AddSingleton<XmlDbContext>(provider =>
                 new XmlDbContext(
-                    builder.Configuration["XmlFilePaths:Users"],
-                    builder.Configuration["XmlFilePaths:UserRoles"]
+                    builder.Configuration["XmlDbFilePaths:Users"],
+                    builder.Configuration["XmlDbFilePaths:UserRoles"]
                 ));
 
             // Add Repositories
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IUserRepository, XmlUserRepository>();
+            builder.Services.AddScoped<UserRepository>();
+            builder.Services.AddScoped<XmlUserRepository>();
 
             // Register the additional services
             builder.Services.AddScoped<IDbTransactionService, DbTransactionService>();
+            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
             // Configure JWT authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
