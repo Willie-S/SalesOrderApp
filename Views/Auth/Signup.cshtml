@@ -6,6 +6,26 @@
 
 <h2>Signup</h2>
 
+<!-- Display general error messages -->
+@if (ViewData.ModelState.Values.Any(v => v.Errors.Any()))
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+@if (TempData["SignupSuccess"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SignupSuccess"]
+    </div>
+}
+
 <form asp-action="Signup" method="post">
     <div class="form-group">
         <label asp-for="FirstName" class="control-label"></label>
