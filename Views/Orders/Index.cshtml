@@ -17,19 +17,20 @@
 
 @section Scripts {
     <script>
-        function selectOrder(orderId) {
+        function selectOrder(orderId, selectedOrderId) {
+            var addClass = orderId != selectedOrderId;
+
             $.ajax({
                 url: '@Url.Action("UpdateSelectedOrder", "Orders")',
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify(orderId),
+                data: JSON.stringify(addClass ? orderId : 0),
                 success: function (result) {
-                    $('#orderLinesContainer').html(result);
-                    //$('#orderHeadersTableBody tr').removeClass('table-active');
-                    //$(`tr[data-order-id="${orderId}"]`).addClass('table-active');
+                    $('#orderTablesContainer').html(result);
+                    $('#orderHeadersTableBody tr').removeClass('table-active');
+                    if (addClass) $(`tr[data-order-id="${orderId}"]`).addClass('table-active');
                 },
-                error: function (e) {
-                    console.log("e = ", e)
+                error: function (xhr, status, error) {
                     alert('An error occurred while selecting the order.');
                 }
             });

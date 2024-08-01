@@ -67,25 +67,17 @@ public class OrdersController : Controller
         {
             var userId = GetCurrentUserId();
             var salesOrders = await _salesOrderRepository.GetAllByUserIdAsync(userId);
-
             var selectedOrder = salesOrders.FirstOrDefault(o => o.Id == selectedOrderId);
 
-            if (selectedOrder != null)
+            if (selectedOrderId > 0 && selectedOrder == null) return BadRequest("Selected order not found.");
+
+            var viewModel = new OrdersViewModel
             {
-                var viewModel = new OrdersViewModel
-                {
-                    SalesOrders = salesOrders.ToList(),
-                    SelectedSalesOrder = selectedOrder
-                };
+                SalesOrders = salesOrders.ToList(),
+                SelectedSalesOrder = selectedOrder
+            };
 
-                // Update TempData or other state management system with the selected order
-                TempData["SelectedSalesOrder"] = selectedOrder;
-
-                return PartialView("_OrderLinesTablePartial", viewModel);
-            }
-
-            // If the selected order is not found, return a bad request with an appropriate message
-            return BadRequest("Selected order not found.");
+            return PartialView("_OrderTablesPartial", viewModel);
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -99,13 +91,6 @@ public class OrdersController : Controller
             // Log.Error(ex, "An error occurred while updating the selected order.");
             return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the order. Please try again later.");
         }
-    }
-
-    [HttpPost]
-    public IActionResult AddOrderLine(OrdersAddViewModel model)
-    {
-        model.OrderLines.Add(new OrderLineViewModel());
-        return PartialView("_OrderLinesFormPartial", model);
     }
 
     [HttpPost]
@@ -153,7 +138,7 @@ public class OrdersController : Controller
                 SelectedSalesOrder = null
             };
 
-            return PartialView("_OrderTablesPartial", viewModel);
+            return RedirectToAction("Index", "Orders");
         }
         catch (UnauthorizedAccessException ex)
         {

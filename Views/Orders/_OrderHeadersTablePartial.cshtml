@@ -13,15 +13,14 @@
             <th>Actions</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="orderHeadersTableBody">
         @if (Model.SalesOrders.Any())
         {
             @foreach (var order in Model.SalesOrders)
             {
                 <tr 
                     data-order-id="@order.Id"
-                    class="@(Model.SelectedSalesOrder != null && order.Id == Model.SelectedSalesOrder.Id ? "table-active" : "")"
-                    onclick="selectOrder(@order.Id)"
+                    onclick="selectOrder(@order.Id, @(Model.SelectedSalesOrder?.Id))"
                 >
                     <td>@order.OrderHeader.OrderNumber</td>
                     <td>@order.OrderHeader.OrderType.Name</td>
