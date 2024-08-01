@@ -8,7 +8,10 @@
         <thead>
             <tr>
                 <th>Line Number</th>
-                <th>Product Code</th>
+                <th>
+                    Product Code
+                    <input type="text" id="productCodeFilter" class="form-control form-control-sm" placeholder="Filter">
+                </th>
                 <th>Product Type</th>
                 <th>Cost Price</th>
                 <th>Sales Price</th>
@@ -16,7 +19,7 @@
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="orderLinesTableBody">
             @if (Model.SelectedSalesOrder.OrderLines.Any())
             {
                 @foreach (var line in Model.SelectedSalesOrder.OrderLines)
@@ -46,6 +49,27 @@
 }
 
 <script>
+    // Event listeners for filter inputs
+    document.getElementById('productCodeFilter').addEventListener('input', applyFilters);
+
+    function applyFilters() {
+        var productCode = document.getElementById('productCodeFilter').value.toLowerCase();
+
+        var rows = document.querySelectorAll('#orderLinesTableBody tr');
+
+        rows.forEach(function (row) {
+            var productCodeCell = row.cells[1].innerText.toLowerCase();
+
+            var matchesProductCode = productCode === '' || productCodeCell.includes(productCode);
+
+            if (matchesProductCode) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
     function deleteLine(lineId, event) {
         // Prevent triggering the row click event
         event.stopPropagation();
