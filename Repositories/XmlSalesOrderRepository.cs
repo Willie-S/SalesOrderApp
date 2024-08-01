@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace SalesOrderApp.Repositories
 {
-    public class XmlSalesOrderRepository : ISalesOrderRepository
+    public class XmlSalesOrderRepository : IXmlSalesOrderRepository
     {
         private readonly XmlDbContext _context;
 

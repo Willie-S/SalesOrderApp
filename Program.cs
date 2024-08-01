@@ -48,10 +48,11 @@ namespace SalesOrderApp
             // Add Repositories
             builder.Services.AddScoped<UserRepository>();
             builder.Services.AddScoped<XmlUserRepository>();
-            builder.Services.AddScoped<SalesOrderRepository>();
-            builder.Services.AddScoped<XmlSalesOrderRepository>();
+            builder.Services.AddScoped<ISalesOrderRepository, SalesOrderRepository>();
+            builder.Services.AddScoped<IXmlSalesOrderRepository, XmlSalesOrderRepository>();
 
             // Register the additional services
+            builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IDbTransactionService, DbTransactionService>();
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 

@@ -13,12 +13,14 @@ public class OrdersController : Controller
 {
     private readonly SalesOrderRepository _salesOrderRepository;
     private readonly XmlSalesOrderRepository _xmlSalesOrderRepository;
+    private readonly IOrderService _orderService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public OrdersController(SalesOrderRepository salesOrderRepository, XmlSalesOrderRepository xmlSalesOrderRepository, IHttpContextAccessor httpContextAccessor)
+    public OrdersController(SalesOrderRepository salesOrderRepository, XmlSalesOrderRepository xmlSalesOrderRepository, IOrderService orderService, IHttpContextAccessor httpContextAccessor)
     {
         _salesOrderRepository = salesOrderRepository;
         _xmlSalesOrderRepository = xmlSalesOrderRepository;
+        _orderService = orderService;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -174,13 +176,7 @@ public class OrdersController : Controller
                 }).ToList()
             };
 
-            // Commit the changes to the SQL DB
-            var savedOrder = await _salesOrderRepository.AddAsync(newOrder);
-            await _salesOrderRepository.ReassignLineNumbersAsync(savedOrder.Id);
-
-            // Commit the changes to the XML DB
-            var xmlSavedOrder = await _xmlSalesOrderRepository.AddAsync(newOrder);
-            await _xmlSalesOrderRepository.ReassignLineNumbersAsync(xmlSavedOrder.Id);
+            var savedOrder = await _orderService.CreateOrder(newOrder);
 
             var salesOrders = await _salesOrderRepository.GetAllByUserIdAsync(userId);
 
