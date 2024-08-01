@@ -3,7 +3,7 @@
 @if (Model.SelectedSalesOrder != null)
 {
     <h2 class="mt-4">Order Lines</h2>
-    <button class="btn btn-success mb-3" id="addLineBtn">Add Line</button>
+    <button class="btn btn-success mb-3" id="addLineBtn" onclick="addOrderLine(@Model.SelectedSalesOrder.Id)">Add Line</button>
     <table class="table table-bordered">
         <thead>
             <tr>

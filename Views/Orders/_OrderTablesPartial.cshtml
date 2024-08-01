@@ -9,3 +9,72 @@
         @await Html.PartialAsync("_OrderLinesTablePartial", Model)
     </div>
 </div>
+
+<div id="addOrderLineContainer">
+    @await Html.PartialAsync("_AddOrderLineFormPartial", new SalesOrderApp.ViewModels.OrdersAddLineViewModel())
+</div>
+
+<div id="editOrderHeaderContainer">
+    @await Html.PartialAsync("_EditOrderHeaderPartial", new SalesOrderApp.ViewModels.OrdersEditHeaderViewModel())
+</div>
+
+<div id="editOrderLineContainer">
+    @await Html.PartialAsync("_EditOrderLinePartial", new SalesOrderApp.ViewModels.OrdersEditLineViewModel())
+</div>
+
+<script>
+    function addOrderLine(orderId) {
+        // Prevent triggering the row selection
+        event.stopPropagation();
+        console.log("clicked")
+        $.ajax({
+            url: '@Url.Action("CreateLine", "Orders")',
+            type: 'GET',
+            data: { id: orderId },
+            success: function (result) {
+                console.log("success result = ", result)
+                $('#addOrderLineContainer').html(result);
+                $('#addOrderLineModal').modal('show');
+            },
+            error: function (xhr, status, error) {
+                alert('An error occurred while retrieving the order line for creating.');
+            }
+        });
+    }
+
+    function editOrderHeader(orderId, event) {
+        // Prevent triggering the row selection
+        event.stopPropagation();
+
+        $.ajax({
+            url: '@Url.Action("EditOrderHeader", "Orders")',
+            type: 'GET',
+            data: { id: orderId },
+            success: function (result) {
+                $('#editOrderHeaderContainer').html(result);
+                $('#editOrderHeaderModal').modal('show');
+            },
+            error: function (xhr, status, error) {
+                alert('An error occurred while retrieving the order header for editing.');
+            }
+        });
+    }
+
+    function editOrderLine(orderLineId, event) {
+        // Prevent triggering the row selection
+        event.stopPropagation();
+
+        $.ajax({
+            url: '@Url.Action("EditOrderLine", "Orders")',
+            type: 'GET',
+            data: { id: orderLineId },
+            success: function (result) {
+                $('#editOrderLineContainer').html(result);
+                $('#editOrderLineModal').modal('show');
+            },
+            error: function (xhr, status, error) {
+                alert('An error occurred while retrieving the order line for editing.');
+            }
+        });
+    }
+</script>

@@ -1,18 +1,17 @@
-﻿@model SalesOrderApp.ViewModels.OrdersEditLineViewModel
+﻿@model SalesOrderApp.ViewModels.OrdersAddLineViewModel
 
-@if (Model != null)
+@if (Model?.SalesOrderId > 0) 
 {
-    <div class="modal fade" id="editOrderLineModal" tabindex="-1" aria-labelledby="addOrderLineModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addOrderLineModal" tabindex="-1" aria-labelledby="addOrderLineModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editOrderLineModalLabel">Edit Order Line</h5>
+                    <h5 class="modal-title" id="addOrderLineModalLabel">Add Order Line</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editOrderLineForm" method="post" asp-action="EditOrderLine" asp-controller="Orders">
+                    <form id="addOrderLineForm" method="post" asp-action="CreateLine" asp-controller="Orders">
                         <input type="hidden" asp-for="SalesOrderId">
-                        <input type="hidden" asp-for="OrderLineId">
 
                         <div class="form-group mt-1">
                             <label asp-for="OrderLine.ProductCode" class="control-label">Product Code</label>
@@ -40,9 +39,7 @@
                             <span asp-validation-for="OrderLine.Quantity" class="text-danger"></span>
                         </div>
 
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Save changes</button>
-                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Submit</button>
                     </form>
                 </div>
             </div>

@@ -159,6 +159,71 @@ public class OrdersController : Controller
         }
     }
 
+    [HttpGet]
+    public async Task<IActionResult> CreateLine(int id)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+
+            var viewModel = new OrdersAddLineViewModel
+            {
+                SalesOrderId = id,
+                OrderLine = new OrderLineViewModel()
+            };
+
+            return PartialView("_AddOrderLineFormPartial", viewModel);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized("You are not authorized to create an order line.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving the order line for creating. Please try again later.");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateLine(OrdersAddLineViewModel model)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return PartialView("_AddOrderFormPartial", model);
+            }
+
+            var userId = GetCurrentUserId();
+
+            var newOrderLine = new OrderLine
+            {
+                ProductCode = model.OrderLine.ProductCode,
+                ProductTypeId = (int)model.OrderLine.ProductType,
+                CostPrice = model.OrderLine.CostPrice,
+                SalesPrice = model.OrderLine.SalesPrice,
+                Quantity = model.OrderLine.Quantity
+            };
+
+            await _salesOrderRepository.AddOrderLineAsync(model.SalesOrderId, newOrderLine, userId);
+            await _salesOrderRepository.ReassignLineNumbersAsync(model.SalesOrderId);
+
+            return RedirectToAction("Index", "Orders", new { selectedOrderId = model.SalesOrderId });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            // Log exception and show error message
+            TempData["ErrorMessage"] = "You are not authorized to add orders.";
+            return RedirectToAction("Index", "Home");
+        }
+        catch (Exception ex)
+        {
+            // Log exception and show error message
+            TempData["ErrorMessage"] = "An error occurred while adding the order. Please try again later.";
+            return RedirectToAction("Index", "Orders");
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> DeleteOrder(int id)
     {
