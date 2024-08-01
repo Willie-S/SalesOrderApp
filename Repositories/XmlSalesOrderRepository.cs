@@ -14,6 +14,37 @@ namespace SalesOrderApp.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<SalesOrder>> GetAllAsync()
+        {
+            return await Task.Run(() =>
+            {
+                // Load all sales orders
+                var salesOrders = _context.SalesOrders.GetAll().ToList();
+
+                // Load related OrderHeaders and OrderLines manually
+                foreach (var salesOrder in salesOrders)
+                {
+                    // Load the related OrderHeader
+                    salesOrder.OrderHeader = _context.OrderHeaders.GetAll().FirstOrDefault(oh => oh.SalesOrderId == salesOrder.Id);
+
+                    // Load the enum props
+                    salesOrder.OrderHeader.OrderType = _context.OrderType.GetById(salesOrder.OrderHeader.OrderTypeId);
+                    salesOrder.OrderHeader.OrderStatus = _context.OrderStatus.GetById(salesOrder.OrderHeader.OrderStatusId);
+
+                    // Load related OrderLines
+                    salesOrder.OrderLines = _context.OrderLines.GetAll().Where(l => l.SalesOrderId == salesOrder.Id).ToList();
+
+                    // Load each line's enum props
+                    foreach (var orderLine in salesOrder.OrderLines)
+                    {
+                        orderLine.ProductType = _context.ProductType.GetById(orderLine.ProductTypeId);
+                    }
+                }
+
+                return salesOrders;
+            });
+        }
+
         public async Task<IEnumerable<SalesOrder>> GetAllByUserIdAsync(int userId)
         {
             return await Task.Run(() =>

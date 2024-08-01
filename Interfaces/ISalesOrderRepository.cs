@@ -4,6 +4,7 @@ namespace SalesOrderApp.Interfaces
 {
     public interface ISalesOrderRepository
     {
+        Task<IEnumerable<SalesOrder>> GetAllAsync();
         Task<IEnumerable<SalesOrder>> GetAllByUserIdAsync(int userId);
         Task<SalesOrder> GetByIdAsync(int salesOrderId);
         Task<SalesOrder> AddAsync(SalesOrder salesOrder);

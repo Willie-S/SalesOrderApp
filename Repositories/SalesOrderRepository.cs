@@ -14,6 +14,15 @@ namespace SalesOrderApp.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<SalesOrder>> GetAllAsync()
+        {
+            return await _context.SalesOrders
+                .Include(s => s.OrderHeader).ThenInclude(h => h.OrderType)
+                .Include(s => s.OrderHeader).ThenInclude(h => h.OrderStatus)
+                .Include(s => s.OrderLines).ThenInclude(l => l.ProductType)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<SalesOrder>> GetAllByUserIdAsync(int userId)
         {
             return await _context.SalesOrders
