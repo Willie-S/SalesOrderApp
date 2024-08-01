@@ -1,0 +1,45 @@
+﻿@model SalesOrderApp.ViewModels.OrdersViewModel
+
+<h2>Order Headers</h2>
+<button id="placeOrderBtn" class="btn btn-primary mb-3" onclick="placeOrder()">Place Order</button>
+<table class="table table-bordered" id="orderHeadersTable">
+    <thead class="thead-dark">
+        <tr>
+            <th>Order Number</th>
+            <th>Order Type</th>
+            <th>Order Status</th>
+            <th>Customer Name</th>
+            <th>Create Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.SalesOrders.Any())
+        {
+            @foreach (var order in Model.SalesOrders)
+            {
+                <tr 
+                    data-order-id="@order.Id"
+                    class="@(Model.SelectedSalesOrder != null && order.Id == Model.SelectedSalesOrder.Id ? "table-active" : "")"
+                    onclick="selectOrder(@order.Id)"
+                >
+                    <td>@order.OrderHeader.OrderNumber</td>
+                    <td>@order.OrderHeader.OrderType.Name</td>
+                    <td>@order.OrderHeader.OrderStatus.Name</td>
+                    <td>@order.OrderHeader.CustomerName</td>
+                    <td>@order.OrderHeader.CreateDate.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm edit-order-header">Edit</button>
+                        <button class="btn btn-danger btn-sm delete-order-header">Delete</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center">No available data</td>
+            </tr>
+        }
+    </tbody>
+</table>

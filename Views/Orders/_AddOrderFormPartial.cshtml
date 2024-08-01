@@ -1,0 +1,124 @@
+﻿@model SalesOrderApp.ViewModels.OrdersAddViewModel
+
+<!-- Modal for Adding Orders -->
+<div class="modal fade" id="addOrderModal" tabindex="-1" aria-labelledby="addOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addOrderModalLabel">Place Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addOrderForm" method="post" asp-action="CreateOrder" asp-controller="Orders">
+                    <div class="mb-3">
+                        <label asp-for="OrderHeader.OrderNumber" class="form-label"></label>
+                        <input asp-for="OrderHeader.OrderNumber" class="form-control" required>
+                        <span asp-validation-for="OrderHeader.OrderNumber" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="OrderHeader.CustomerName" class="form-label"></label>
+                        <input asp-for="OrderHeader.CustomerName" class="form-control" required>
+                        <span asp-validation-for="OrderHeader.CustomerName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="OrderHeader.OrderType" class="form-label"></label>
+                        <select asp-for="OrderHeader.OrderType" class="form-control">
+                            <option value="">Select Order Type</option>
+                            @foreach (var type in Enum.GetValues(typeof(SalesOrderApp.Models.OrderTypeEnum)))
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </select>
+                        <span asp-validation-for="OrderHeader.OrderType" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="OrderHeader.OrderStatus" class="form-label"></label>
+                        <select asp-for="OrderHeader.OrderStatus" class="form-control">
+                            <option value="">Select Order Status</option>
+                            @foreach (var status in Enum.GetValues(typeof(SalesOrderApp.Models.OrderStatusEnum)))
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        </select>
+                        <span asp-validation-for="OrderHeader.OrderStatus" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="OrderHeader.CreateDate" class="form-label"></label>
+                        <input asp-for="OrderHeader.CreateDate" class="form-control" type="date" required>
+                        <span asp-validation-for="OrderHeader.CreateDate" class="text-danger"></span>
+                    </div>
+                    <h5>Order Lines</h5>
+                    <div id="orderLinesFormContainer">
+                        <!--  Order lines are dynamically inserted  -->
+                    </div>
+                    <button type="button" class="btn btn-success mt-3" id="addOrderLineBtn" onclick="addOrderLine()">Add Order Line</button>
+                    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addOrderLine() {
+        var lineCount = $('#orderLinesFormContainer .order-line').length;
+        var newLine = $('.order-line-template').clone().removeClass('order-line-template').addClass('order-line').show();
+        newLine.find('input, select').each(function () {
+            var name = $(this).attr('name');
+            $(this).attr('name', name.replace(/__INDEX__/g, lineCount));
+        });
+        newLine.appendTo('#orderLinesFormContainer');
+
+        $('#orderLinesFormContainer').on('click', '.remove-line', function () {
+            $(this).closest('.order-line').remove();
+            updateOrderLineIndices();
+        });
+    }
+
+    function updateOrderLineIndices() {
+        console.log("updating line numbers");
+        $('#orderLinesFormContainer .order-line').each(function (index) {
+            $(this).find('input, select').each(function () {
+                var name = $(this).attr('name');
+                $(this).attr('name', name.replace(/\[\d+\]/g, '[' + index + ']'));
+            });
+        });
+    }
+</script>
+
+<!-- Hidden template for new order lines -->
+<div class="order-line-template" style="display: none;">
+    <div class="mb-3">
+        <label class="form-label">Product Code</label>
+        <input type="text" class="form-control" name="OrderLines[__INDEX__].ProductCode" required>
+        <span class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Product Type</label>
+        <select class="form-control" name="OrderLines[__INDEX__].ProductType">
+            <option value="">Select Product Type</option>
+            @foreach (var type in Enum.GetValues(typeof(SalesOrderApp.Models.ProductTypeEnum)))
+            {
+                <option value="@type">@type</option>
+            }
+        </select>
+        <span class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Cost Price</label>
+        <input type="number" step="0.01" class="form-control" name="OrderLines[__INDEX__].CostPrice" required>
+        <span class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Sales Price</label>
+        <input type="number" step="0.01" class="form-control" name="OrderLines[__INDEX__].SalesPrice" required>
+        <span class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Quantity</label>
+        <input type="number" class="form-control" name="OrderLines[__INDEX__].Quantity" required>
+        <span class="text-danger"></span>
+    </div>
+
+    <button type="button" class="btn btn-danger mt-2 remove-line">Remove Line</button>
+</div>

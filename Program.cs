@@ -21,6 +21,7 @@ namespace SalesOrderApp
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddHttpContextAccessor();
 
             // Avoid circular reference issues
             builder.Services.AddControllers().AddJsonOptions(options =>
@@ -40,6 +41,7 @@ namespace SalesOrderApp
             // Add Repositories
             builder.Services.AddScoped<UserRepository>();
             builder.Services.AddScoped<XmlUserRepository>();
+            builder.Services.AddScoped<SalesOrderRepository>();
 
             // Register the additional services
             builder.Services.AddScoped<IDbTransactionService, DbTransactionService>();
@@ -81,7 +83,7 @@ namespace SalesOrderApp
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Orders}/{action=Index}/{id?}");
 
             app.Run();
         }

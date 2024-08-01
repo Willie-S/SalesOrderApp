@@ -1,0 +1,11 @@
+﻿@model SalesOrderApp.ViewModels.OrdersViewModel
+
+<div class="container">
+    <div id="orderHeadersContainer" class="mt-4">
+        @await Html.PartialAsync("_OrderHeadersTablePartial", Model)
+    </div>
+
+    <div id="orderLinesContainer" class="mt-4">
+        @await Html.PartialAsync("_OrderLinesTablePartial", Model)
+    </div>
+</div>

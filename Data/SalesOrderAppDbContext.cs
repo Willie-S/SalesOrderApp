@@ -13,6 +13,9 @@ namespace SalesOrderApp.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<SalesOrder> SalesOrders { get; set; }
+        public DbSet<OrderHeader> OrderHeaders { get; set; }
+        public DbSet<OrderLine> OrderLines { get; set; }
 
         #endregion
 
@@ -37,6 +40,51 @@ namespace SalesOrderApp.Data
                 );
             });
 
+            // Seed data for ProductType
+            modelBuilder.Entity<ProductType>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.HasData(
+                    Enum.GetValues(typeof(ProductTypeEnum))
+                        .Cast<ProductTypeEnum>()
+                        .Select(e => new ProductType
+                        {
+                            Id = (int)e,
+                            Name = e.ToString()
+                        })
+                );
+            });
+
+            // Seed data for OrderType
+            modelBuilder.Entity<OrderType>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.HasData(
+                    Enum.GetValues(typeof(OrderTypeEnum))
+                        .Cast<OrderTypeEnum>()
+                        .Select(e => new OrderType
+                        {
+                            Id = (int)e,
+                            Name = e.ToString()
+                        })
+                );
+            });
+
+            // Seed data for OrderStatus
+            modelBuilder.Entity<OrderStatus>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.HasData(
+                    Enum.GetValues(typeof(OrderStatusEnum))
+                        .Cast<OrderStatusEnum>()
+                        .Select(e => new OrderStatus
+                        {
+                            Id = (int)e,
+                            Name = e.ToString()
+                        })
+                );
+            });
+
             // Define any special constraints and relationships
 
             modelBuilder.Entity<User>(e =>
@@ -49,6 +97,28 @@ namespace SalesOrderApp.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
+            modelBuilder.Entity<SalesOrder>(e =>
+            {
+                e.HasOne(x => x.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(x => x.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(x => x.UpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(x => x.UpdatedByUserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(x => x.OrderHeader)
+                    .WithOne(x => x.SalesOrder)
+                    .HasForeignKey<OrderHeader>(x => x.SalesOrderId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                e.HasMany(x => x.OrderLines)
+                    .WithOne(x => x.SalesOrder)
+                    .HasForeignKey(x => x.SalesOrderId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
 
         public override int SaveChanges()

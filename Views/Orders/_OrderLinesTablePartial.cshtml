@@ -1,0 +1,46 @@
+﻿@model SalesOrderApp.ViewModels.OrdersViewModel
+
+@if (Model.SelectedSalesOrder != null)
+{
+    <h2 class="mt-4">Order Lines</h2>
+    <button class="btn btn-success mb-3" id="addLineBtn">Add Line</button>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Line Number</th>
+                <th>Product Code</th>
+                <th>Product Type</th>
+                <th>Cost Price</th>
+                <th>Sales Price</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.SelectedSalesOrder.OrderLines.Any())
+            {
+                @foreach (var line in Model.SelectedSalesOrder.OrderLines)
+                {
+                    <tr>
+                        <td>@line.LineNumber</td>
+                        <td>@line.ProductCode</td>
+                        <td>@line.ProductType</td>
+                        <td>@line.CostPrice</td>
+                        <td>@line.SalesPrice</td>
+                        <td>@line.Quantity</td>
+                        <td>
+                            <a href="@Url.Action("EditLine", "Orders", new { id = line.Id })" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="@Url.Action("DeleteLine", "Orders", new { id = line.Id })" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center">No available data</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

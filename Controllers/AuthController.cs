@@ -85,34 +85,43 @@ namespace SalesOrderApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var user = await _userRepository.GetUserByEmailAsync(model.Email);
-
-            if (user == null || _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password) != PasswordVerificationResult.Success)
+            try
             {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                return View(model);
+                if (!ModelState.IsValid)
+                    return View(model);
+
+                var user = await _userRepository.GetUserByEmailAsync(model.Email);
+
+                if (user == null || _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password) != PasswordVerificationResult.Success)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return View(model);
+                }
+
+                // Set up authentication
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = model.RememberMe
+                };
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
+                TempData["LoginSuccess"] = "Login successful.";
+                return RedirectToAction("Index", "Orders");
             }
-
-            // Set up authentication
-            var claims = new List<Claim>
+            catch (Exception ex)
             {
-                new Claim(ClaimTypes.Name, user.Email),
-                // Add more claims as needed
-            };
-
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new AuthenticationProperties
-            {
-                IsPersistent = model.RememberMe
-            };
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-
-            TempData["LoginSuccess"] = "Login successful.";
-            return RedirectToAction("Index", "Home");
+                _logger.LogError(ex, "An unexpected error occurred during login.");
+                ModelState.AddModelError(string.Empty, "An unexpected error occurred. Please try again later.");
+                return View();
+            }
         }
 
         public async Task<IActionResult> Logout()

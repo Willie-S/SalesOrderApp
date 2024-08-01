@@ -1,0 +1,42 @@
+﻿@model SalesOrderApp.ViewModels.OrdersViewModel
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<div id="orderTablesContainer">
+    @await Html.PartialAsync("_OrderTablesPartial", Model)
+</div>
+
+@await Html.PartialAsync("_AddOrderFormPartial", new SalesOrderApp.ViewModels.OrdersAddViewModel
+{
+    OrderHeader = new SalesOrderApp.ViewModels.OrderHeaderViewModel(),
+    OrderLines = new List<SalesOrderApp.ViewModels.OrderLineViewModel>()
+})
+
+
+@section Scripts {
+    <script>
+        function selectOrder(orderId) {
+            $.ajax({
+                url: '@Url.Action("UpdateSelectedOrder", "Orders")',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(orderId),
+                success: function (result) {
+                    $('#orderLinesContainer').html(result);
+                    //$('#orderHeadersTableBody tr').removeClass('table-active');
+                    //$(`tr[data-order-id="${orderId}"]`).addClass('table-active');
+                },
+                error: function (e) {
+                    console.log("e = ", e)
+                    alert('An error occurred while selecting the order.');
+                }
+            });
+        }
+
+        function placeOrder() {
+            $('#addOrderModal').modal('show');
+        }
+    </script>
+}
