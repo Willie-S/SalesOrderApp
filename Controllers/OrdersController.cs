@@ -302,4 +302,82 @@ public class OrdersController : Controller
         }
     }
 
+    [HttpGet]
+    public async Task<IActionResult> EditOrderLine(int id)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var line = await _salesOrderRepository.GetOrderLineByIdAsync(id);
+
+            if (line == null)
+            {
+                return NotFound("Order not found or you are not authorized to edit this order.");
+            }
+
+            var viewModel = new OrdersEditLineViewModel
+            {
+                SalesOrderId = line.SalesOrderId,
+                OrderLineId = id,
+                OrderLine = new OrderLineViewModel
+                {
+                    ProductCode = line.ProductCode,
+                    ProductType = (ProductTypeEnum)line.ProductTypeId,
+                    CostPrice = line.CostPrice,
+                    SalesPrice = line.SalesPrice,
+                    Quantity = line.Quantity
+                }
+            };
+
+            return PartialView("_EditOrderLinePartial", viewModel);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized("You are not authorized to edit this order line.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving the order line for editing. Please try again later.");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditOrderLine(OrdersEditLineViewModel model)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return PartialView("_EditOrderLinePartial", model);
+            }
+
+            var userId = GetCurrentUserId();
+            var order = await _salesOrderRepository.GetByIdAsync(model.SalesOrderId);
+
+            if (order == null || order.CreatedByUserId != userId)
+            {
+                return NotFound("Order not found or you are not authorized to update this order.");
+            }
+
+            var line = order.OrderLines.FirstOrDefault(ol => ol.Id == model.OrderLineId);
+
+            line.ProductCode = model.OrderLine.ProductCode;
+            line.ProductTypeId = (int)model.OrderLine.ProductType;
+            line.CostPrice = model.OrderLine.CostPrice;
+            line.SalesPrice = model.OrderLine.SalesPrice;
+            line.Quantity = model.OrderLine.Quantity;
+
+            await _salesOrderRepository.UpdateOrderLineAsync(line, userId);
+
+            return RedirectToAction("Index", "Orders", new { selectedOrderId = order.Id });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized("You are not authorized to update this order line.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the order line. Please try again later.");
+        }
+    }
 }

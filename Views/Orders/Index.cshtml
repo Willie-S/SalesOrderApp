@@ -18,6 +18,10 @@
     @await Html.PartialAsync("_EditOrderHeaderPartial", new SalesOrderApp.ViewModels.OrdersEditHeaderViewModel())
 </div>
 
+<div id="editOrderLineContainer">
+    @await Html.PartialAsync("_EditOrderLinePartial", new SalesOrderApp.ViewModels.OrdersEditLineViewModel())
+</div>
+
 @section Scripts {
     <script>
         function selectOrder(orderId, selectedOrderId) {
@@ -57,6 +61,24 @@
                 },
                 error: function (xhr, status, error) {
                     alert('An error occurred while retrieving the order header for editing.');
+                }
+            });
+        }
+
+        function editOrderLine(orderLineId, event) {
+            // Prevent triggering the row selection
+            event.stopPropagation();
+
+            $.ajax({
+                url: '@Url.Action("EditOrderLine", "Orders")',
+                type: 'GET',
+                data: { id: orderLineId },
+                success: function (result) {
+                    $('#editOrderLineContainer').html(result);
+                    $('#editOrderLineModal').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    alert('An error occurred while retrieving the order line for editing.');
                 }
             });
         }
