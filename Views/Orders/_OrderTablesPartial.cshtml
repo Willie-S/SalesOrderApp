@@ -36,8 +36,9 @@
                 $('#addOrderLineContainer').html(result);
                 $('#addOrderLineModal').modal('show');
             },
-            error: function (xhr, status, error) {
-                alert('An error occurred while retrieving the order line for creating.');
+            error: function (e) {
+                var errMsg = e.status == 401 ? "You are not authorised for this action" : "An unexpected error occurred.";
+                alert(errMsg);
             }
         });
     }
@@ -54,8 +55,9 @@
                 $('#editOrderHeaderContainer').html(result);
                 $('#editOrderHeaderModal').modal('show');
             },
-            error: function (xhr, status, error) {
-                alert('An error occurred while retrieving the order header for editing.');
+            error: function (e) {
+                var errMsg = e.status == 401 ? "You are not authorised for this action" : "An unexpected error occurred.";
+                alert(errMsg);
             }
         });
     }
@@ -72,8 +74,9 @@
                 $('#editOrderLineContainer').html(result);
                 $('#editOrderLineModal').modal('show');
             },
-            error: function (xhr, status, error) {
-                alert('An error occurred while retrieving the order line for editing.');
+            error: function (e) {
+                var errMsg = e.status == 401 ? "You are not authorised for this action" : "An unexpected error occurred.";
+                alert(errMsg);
             }
         });
     }

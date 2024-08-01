@@ -101,6 +101,7 @@ namespace SalesOrderApp.Controllers
                 // Set up authentication
                 var claims = new List<Claim>
                 {
+                    new Claim(ClaimTypes.Role, user.UserRole.Name),
                     new Claim(ClaimTypes.Name, user.Email),
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 };

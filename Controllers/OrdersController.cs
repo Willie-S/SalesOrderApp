@@ -105,11 +105,41 @@ public class OrdersController : Controller
         }
     }
 
+    [HttpGet]
+    public async Task<IActionResult> CreateOrder()
+    {
+        if (!IsAdmin())
+        {
+            TempData["ErrorMessage"] = "You are not authorized for this action.";
+            return Unauthorized("You are not authorized for this action.");
+        }
+
+        try
+        {
+            var viewModel = new OrdersAddViewModel
+            {
+                OrderHeader = new OrderHeaderViewModel(),
+                OrderLines = new List<OrderLineViewModel>()
+            };
+
+            return PartialView("_AddOrderFormPartial", viewModel);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized("You are not authorized to create an order.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving the order line for creating. Please try again later.");
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateOrder(OrdersAddViewModel model)
     {
         if (!IsAdmin())
         {
+            TempData["ErrorMessage"] = "You are not authorized for this action.";
             return Unauthorized("You are not authorized for this action.");
         }
 
@@ -181,6 +211,7 @@ public class OrdersController : Controller
     {
         if (!IsAdmin())
         {
+            TempData["ErrorMessage"] = "You are not authorized for this action.";
             return Unauthorized("You are not authorized for this action.");
         }
 
@@ -211,6 +242,7 @@ public class OrdersController : Controller
     {
         if (!IsAdmin())
         {
+            TempData["ErrorMessage"] = "You are not authorized for this action.";
             return Unauthorized("You are not authorized for this action.");
         }
 
@@ -261,6 +293,7 @@ public class OrdersController : Controller
     {
         if (!IsAdmin())
         {
+            TempData["ErrorMessage"] = "You are not authorized for this action.";
             return Unauthorized("You are not authorized for this action.");
         }
 
@@ -305,6 +338,7 @@ public class OrdersController : Controller
     {
         if (!IsAdmin())
         {
+            TempData["ErrorMessage"] = "You are not authorized for this action.";
             return Unauthorized("You are not authorized for this action.");
         }
 
@@ -346,6 +380,7 @@ public class OrdersController : Controller
     {
         if (!IsAdmin())
         {
+            TempData["ErrorMessage"] = "You are not authorized for this action.";
             return Unauthorized("You are not authorized for this action.");
         }
 
@@ -390,6 +425,7 @@ public class OrdersController : Controller
     {
         if (!IsAdmin())
         {
+            TempData["ErrorMessage"] = "You are not authorized for this action.";
             return Unauthorized("You are not authorized for this action.");
         }
 
@@ -437,6 +473,7 @@ public class OrdersController : Controller
     {
         if (!IsAdmin())
         {
+            TempData["ErrorMessage"] = "You are not authorized for this action.";
             return Unauthorized("You are not authorized for this action.");
         }
 
@@ -481,6 +518,7 @@ public class OrdersController : Controller
     {
         if (!IsAdmin())
         {
+            TempData["ErrorMessage"] = "You are not authorized for this action.";
             return Unauthorized("You are not authorized for this action.");
         }
 

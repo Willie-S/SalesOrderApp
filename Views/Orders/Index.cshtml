@@ -4,15 +4,20 @@
     ViewData["Title"] = "Orders";
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <div id="orderTablesContainer">
     @await Html.PartialAsync("_OrderTablesPartial", Model)
 </div>
 
-@await Html.PartialAsync("_AddOrderFormPartial", new SalesOrderApp.ViewModels.OrdersAddViewModel
-{
-    OrderHeader = new SalesOrderApp.ViewModels.OrderHeaderViewModel(),
-    OrderLines = new List<SalesOrderApp.ViewModels.OrderLineViewModel>()
-})
+<div id="addOrderContainer">
+    @await Html.PartialAsync("_AddOrderFormPartial", new SalesOrderApp.ViewModels.OrdersAddViewModel())
+</div>
 
 @section Scripts {
     <script>
@@ -36,7 +41,18 @@
         }
 
         function placeOrder() {
-            $('#addOrderModal').modal('show');
+            $.ajax({
+                url: '@Url.Action("CreateOrder", "Orders")',
+                type: 'GET',
+                success: function (result) {
+                    $('#addOrderContainer').html(result);
+                    $('#addOrderModal').modal('show');
+                },
+                error: function (e) {
+                    var errMsg = e.status == 401 ? "You are not authorised for this action" : "An unexpected error occurred.";
+                    alert(errMsg);
+                }
+            });
         }
     </script>
 }

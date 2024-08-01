@@ -58,8 +58,9 @@
                 success: function (result) {
                     $('#orderTablesContainer').html(result);
                 },
-                error: function (xhr, status, error) {
-                    alert('An error occurred while deleting the line.');
+                error: function (e) {
+                    var errMsg = e.status == 401 ? "You are not authorised for this action" : "An unexpected error occurred.";
+                    alert(errMsg);
                 }
             });
         }

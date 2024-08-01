@@ -23,7 +23,9 @@ namespace SalesOrderApp.Repositories
 
         public async Task<User> GetUserByEmailAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email.Trim().ToLower() == email.Trim().ToLower());
+            return await _context.Users
+                .Include(u => u.UserRole)
+                .FirstOrDefaultAsync(u => u.Email.Trim().ToLower() == email.Trim().ToLower());
         }
 
         public async Task<bool> EmailExistsAsync(string email)
