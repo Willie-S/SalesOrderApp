@@ -20,6 +20,7 @@
             {
                 <tr 
                     data-order-id="@order.Id"
+                    class="@(Model.SelectedSalesOrder?.Id > 0 && order.Id == Model.SelectedSalesOrder.Id ? "table-active" : "")"
                     onclick="selectOrder(@order.Id, @(Model.SelectedSalesOrder?.Id))"
                 >
                     <td>@order.OrderHeader.OrderNumber</td>
@@ -29,7 +30,7 @@
                     <td>@order.OrderHeader.CreateDate.ToString("yyyy-MM-dd")</td>
                     <td>
                         <button class="btn btn-warning btn-sm edit-order-header">Edit</button>
-                        <button class="btn btn-danger btn-sm delete-order-header">Delete</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteOrder(@order.Id, event)">Delete</button>
                     </td>
                 </tr>
             }
@@ -42,3 +43,24 @@
         }
     </tbody>
 </table>
+
+<script>
+    function deleteOrder(orderId, event) {
+        // Prevent triggering the row selection
+        event.stopPropagation();
+
+        if (confirm('Are you sure you want to delete this order?')) {
+            $.ajax({
+                url: '@Url.Action("DeleteOrder", "Orders")',
+                type: 'POST',
+                data: { id: orderId },
+                success: function (result) {
+                    $('#orderTablesContainer').html(result);
+                },
+                error: function (xhr, status, error) {
+                    alert('An error occurred while deleting the order.');
+                }
+            });
+        }
+    }
+</script>

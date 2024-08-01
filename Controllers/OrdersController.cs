@@ -153,4 +153,70 @@ public class OrdersController : Controller
             return RedirectToAction("Index", "Orders");
         }
     }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteOrder(int id)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var order = await _salesOrderRepository.GetByIdAsync(id);
+
+            if (order == null || order.CreatedByUserId != userId)
+            {
+                return NotFound("Order not found or you are not authorized to delete this order.");
+            }
+
+            await _salesOrderRepository.DeleteAsync(id);
+
+            var salesOrders = await _salesOrderRepository.GetAllByUserIdAsync(userId);
+
+            var viewModel = new OrdersViewModel
+            {
+                SalesOrders = salesOrders.ToList(),
+                SelectedSalesOrder = null
+            };
+
+            return PartialView("_OrderTablesPartial", viewModel);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized("You are not authorized to delete this order.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the order. Please try again later.");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteLine(int id)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var deletedLine = await _salesOrderRepository.DeleteOrderLineAsync(id, userId);
+
+            await _salesOrderRepository.ReassignLineNumbersAsync(deletedLine.SalesOrderId);
+
+            var salesOrders = await _salesOrderRepository.GetAllByUserIdAsync(userId);
+            var selectedOrder = deletedLine?.SalesOrderId > 0 ? salesOrders.FirstOrDefault(o => o.Id == deletedLine.SalesOrderId) : null;
+
+            var viewModel = new OrdersViewModel
+            {
+                SalesOrders = salesOrders.ToList(),
+                SelectedSalesOrder = selectedOrder
+            };
+
+            return PartialView("_OrderTablesPartial", viewModel);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized("You are not authorized to delete this order line.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the order line. Please try again later.");
+        }
+    }
 }

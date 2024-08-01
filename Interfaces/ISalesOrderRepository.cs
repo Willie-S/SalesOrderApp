@@ -9,10 +9,11 @@ namespace SalesOrderApp.Interfaces
         Task<SalesOrder> AddAsync(SalesOrder salesOrder);
         Task DeleteAsync(int id);
         Task UpdateAsync(int salesOrderId, OrderHeader orderHeader, int userId);
+        Task<OrderLine> GetOrderLineByIdAsync(int orderLineId);
         Task AddOrderLineAsync(int salesOrderId, OrderLine orderLine, int userId);
         Task AddOrderLinesBulkAsync(int salesOrderId, IEnumerable<OrderLine> orderLines, int userId);
         Task UpdateOrderLineAsync(OrderLine orderLine, int userId);
-        Task DeleteOrderLineAsync(int orderLineId, int userId);
+        Task<OrderLine> DeleteOrderLineAsync(int orderLineId, int userId);
         Task ReassignLineNumbersAsync(int salesOrderId);
     }
 }

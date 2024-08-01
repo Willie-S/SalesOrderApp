@@ -29,8 +29,8 @@
                         <td>@line.SalesPrice</td>
                         <td>@line.Quantity</td>
                         <td>
-                            <a href="@Url.Action("EditLine", "Orders", new { id = line.Id })" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="@Url.Action("DeleteLine", "Orders", new { id = line.Id })" class="btn btn-danger btn-sm">Delete</a>
+                            <button class="btn btn-warning btn-sm edit-order-line">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteLine(@line.Id, event)">Delete</button>
                         </td>
                     </tr>
                 }
@@ -44,3 +44,24 @@
         </tbody>
     </table>
 }
+
+<script>
+    function deleteLine(lineId, event) {
+        // Prevent triggering the row click event
+        event.stopPropagation();
+
+        if (confirm('Are you sure you want to delete this line?')) {
+            $.ajax({
+                url: '@Url.Action("DeleteLine", "Orders")',
+                type: 'POST',
+                data: { id: lineId },
+                success: function (result) {
+                    $('#orderTablesContainer').html(result);
+                },
+                error: function (xhr, status, error) {
+                    alert('An error occurred while deleting the line.');
+                }
+            });
+        }
+    }
+</script>

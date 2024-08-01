@@ -63,6 +63,11 @@ namespace SalesOrderApp.Repositories
             }
         }
 
+        public async Task<OrderLine> GetOrderLineByIdAsync(int orderId)
+        {
+            return await _context.OrderLines.FindAsync(orderId);
+        }
+
         public async Task AddOrderLineAsync(int salesOrderId, OrderLine orderLine, int userId)
         {
             var salesOrder = await _context.SalesOrders.FindAsync(salesOrderId);
@@ -107,7 +112,7 @@ namespace SalesOrderApp.Repositories
             }
         }
 
-        public async Task DeleteOrderLineAsync(int orderLineId, int userId)
+        public async Task<OrderLine> DeleteOrderLineAsync(int orderLineId, int userId)
         {
             var orderLine = await _context.OrderLines.FindAsync(orderLineId);
             if (orderLine != null)
@@ -121,6 +126,8 @@ namespace SalesOrderApp.Repositories
                 _context.OrderLines.Remove(orderLine);
                 await _context.SaveChangesAsync();
             }
+
+            return orderLine;
         }
 
         public async Task ReassignLineNumbersAsync(int salesOrderId)
