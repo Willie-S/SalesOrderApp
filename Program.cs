@@ -34,6 +34,12 @@ namespace SalesOrderApp
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SalesOrderAppDb")));
             builder.Services.AddSingleton<XmlDbContext>(provider =>
                 new XmlDbContext(
+                    builder.Configuration["XmlDbFilePaths:OrderHeaders"],
+                    builder.Configuration["XmlDbFilePaths:OrderLines"],
+                    builder.Configuration["XmlDbFilePaths:OrderStatus"],
+                    builder.Configuration["XmlDbFilePaths:OrderType"],
+                    builder.Configuration["XmlDbFilePaths:ProductType"],
+                    builder.Configuration["XmlDbFilePaths:SalesOrders"],
                     builder.Configuration["XmlDbFilePaths:Users"],
                     builder.Configuration["XmlDbFilePaths:UserRoles"]
                 ));

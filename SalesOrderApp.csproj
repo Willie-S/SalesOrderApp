@@ -7,11 +7,35 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\OrderHeaders.xml" />
+    <None Remove="Data\OrderLines.xml" />
+    <None Remove="Data\OrderStatus.xml" />
+    <None Remove="Data\OrderType.xml" />
+    <None Remove="Data\ProductType.xml" />
+    <None Remove="Data\SalesOrders.xml" />
     <None Remove="Data\UserRoles.xml" />
     <None Remove="Data\Users.xml" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Data\OrderHeaders.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\OrderLines.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\OrderStatus.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\OrderType.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\ProductType.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\SalesOrders.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\UserRoles.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
