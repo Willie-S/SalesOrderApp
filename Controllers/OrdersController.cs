@@ -32,6 +32,11 @@ public class OrdersController : Controller
         return userId;
     }
 
+    private bool IsAdmin()
+    {
+        return User.IsInRole(UserRoleEnum.Admin.ToString());
+    }
+
     public async Task<IActionResult> Index(int? selectedOrderId = null)
     {
         try
@@ -103,6 +108,11 @@ public class OrdersController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateOrder(OrdersAddViewModel model)
     {
+        if (!IsAdmin())
+        {
+            return Unauthorized("You are not authorized for this action.");
+        }
+
         try
         {
             if (!ModelState.IsValid)
@@ -169,6 +179,11 @@ public class OrdersController : Controller
     [HttpGet]
     public async Task<IActionResult> CreateLine(int id)
     {
+        if (!IsAdmin())
+        {
+            return Unauthorized("You are not authorized for this action.");
+        }
+
         try
         {
             var userId = GetCurrentUserId();
@@ -194,6 +209,11 @@ public class OrdersController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateLine(OrdersAddLineViewModel model)
     {
+        if (!IsAdmin())
+        {
+            return Unauthorized("You are not authorized for this action.");
+        }
+
         try
         {
             if (!ModelState.IsValid)
@@ -239,6 +259,11 @@ public class OrdersController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteOrder(int id)
     {
+        if (!IsAdmin())
+        {
+            return Unauthorized("You are not authorized for this action.");
+        }
+
         try
         {
             var userId = GetCurrentUserId();
@@ -278,6 +303,11 @@ public class OrdersController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteLine(int id)
     {
+        if (!IsAdmin())
+        {
+            return Unauthorized("You are not authorized for this action.");
+        }
+
         try
         {
             var userId = GetCurrentUserId();
@@ -314,6 +344,11 @@ public class OrdersController : Controller
     [HttpGet]
     public async Task<IActionResult> EditOrderHeader(int id)
     {
+        if (!IsAdmin())
+        {
+            return Unauthorized("You are not authorized for this action.");
+        }
+
         try
         {
             var userId = GetCurrentUserId();
@@ -353,6 +388,11 @@ public class OrdersController : Controller
     [HttpPost]
     public async Task<IActionResult> EditOrderHeader(OrdersEditHeaderViewModel model)
     {
+        if (!IsAdmin())
+        {
+            return Unauthorized("You are not authorized for this action.");
+        }
+
         try
         {
             if (!ModelState.IsValid)
@@ -395,6 +435,11 @@ public class OrdersController : Controller
     [HttpGet]
     public async Task<IActionResult> EditOrderLine(int id)
     {
+        if (!IsAdmin())
+        {
+            return Unauthorized("You are not authorized for this action.");
+        }
+
         try
         {
             var userId = GetCurrentUserId();
@@ -434,6 +479,11 @@ public class OrdersController : Controller
     [HttpPost]
     public async Task<IActionResult> EditOrderLine(OrdersEditLineViewModel model)
     {
+        if (!IsAdmin())
+        {
+            return Unauthorized("You are not authorized for this action.");
+        }
+
         try
         {
             if (!ModelState.IsValid)
