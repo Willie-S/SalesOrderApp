@@ -8,6 +8,7 @@ namespace SalesOrderApp.Interfaces
         Task<SalesOrder> GetByIdAsync(int salesOrderId);
         Task<SalesOrder> AddAsync(SalesOrder salesOrder);
         Task DeleteAsync(int id);
+        Task<OrderHeader> GetOrderHeaderByIdAsync(int orderHeaderId);
         Task UpdateAsync(int salesOrderId, OrderHeader orderHeader, int userId);
         Task<OrderLine> GetOrderLineByIdAsync(int orderLineId);
         Task AddOrderLineAsync(int salesOrderId, OrderLine orderLine, int userId);

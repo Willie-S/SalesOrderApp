@@ -30,7 +30,7 @@ public class OrdersController : Controller
         return userId;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? selectedOrderId = null)
     {
         try
         {
@@ -41,6 +41,11 @@ public class OrdersController : Controller
                 SalesOrders = salesOrders.ToList(),
                 SelectedSalesOrder = null
             };
+
+            if (selectedOrderId.HasValue && selectedOrderId.Value > 0) 
+            {
+                viewModel.SelectedSalesOrder = salesOrders.FirstOrDefault(so => so.Id == selectedOrderId.Value);
+            }
 
             return View(viewModel);
         }
@@ -219,4 +224,82 @@ public class OrdersController : Controller
             return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the order line. Please try again later.");
         }
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> EditOrderHeader(int id)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var order = await _salesOrderRepository.GetByIdAsync(id);
+
+            if (order == null || order.CreatedByUserId != userId)
+            {
+                return NotFound("Order not found or you are not authorized to edit this order.");
+            }
+
+            var viewModel = new OrdersEditHeaderViewModel
+            {
+                SalesOrderId = id,
+                OrderHeaderId = order.OrderHeader.Id,
+                OrderHeader = new OrderHeaderViewModel
+                {
+                    OrderNumber = order.OrderHeader.OrderNumber,
+                    OrderType = (OrderTypeEnum)order.OrderHeader.OrderTypeId,
+                    OrderStatus = (OrderStatusEnum)order.OrderHeader.OrderStatusId,
+                    CustomerName = order.OrderHeader.CustomerName,
+                    CreateDate = order.OrderHeader.CreateDate
+                }
+            };
+
+            return PartialView("_EditOrderHeaderPartial", viewModel);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized("You are not authorized to edit this order header.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving the order header for editing. Please try again later.");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditOrderHeader(OrdersEditHeaderViewModel model)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return PartialView("_EditOrderHeaderPartial", model);
+            }
+
+            var userId = GetCurrentUserId();
+            var order = await _salesOrderRepository.GetByIdAsync(model.SalesOrderId);
+
+            if (order == null || order.CreatedByUserId != userId)
+            {
+                return NotFound("Order not found or you are not authorized to update this order.");
+            }
+
+            order.OrderHeader.OrderNumber = model.OrderHeader.OrderNumber;
+            order.OrderHeader.OrderTypeId = (int)model.OrderHeader.OrderType;
+            order.OrderHeader.OrderStatusId = (int)model.OrderHeader.OrderStatus;
+            order.OrderHeader.CustomerName = model.OrderHeader.CustomerName;
+            order.OrderHeader.CreateDate = model.OrderHeader.CreateDate;
+
+            await _salesOrderRepository.UpdateAsync(model.SalesOrderId, order.OrderHeader, userId);
+
+            return RedirectToAction("Index", "Orders", new { selectedOrderId = order.Id });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized("You are not authorized to update this order header.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the order header. Please try again later.");
+        }
+    }
+
 }

@@ -26,7 +26,10 @@ namespace SalesOrderApp.Repositories
 
         public async Task<SalesOrder> GetByIdAsync(int salesOrderId)
         {
-            return await _context.SalesOrders.FindAsync(salesOrderId);
+            return await _context.SalesOrders
+                .Include(so => so.OrderHeader)
+                .Include(so => so.OrderLines)
+                .FirstOrDefaultAsync(so => so.Id == salesOrderId);
         }
 
         public async Task<SalesOrder> AddAsync(SalesOrder salesOrder)
@@ -46,6 +49,11 @@ namespace SalesOrderApp.Repositories
                 _context.SalesOrders.Remove(salesOrder);
                 await _context.SaveChangesAsync();
             }
+        }
+        
+        public async Task<OrderHeader> GetOrderHeaderByIdAsync(int orderHeaderId)
+        {
+            return await _context.OrderHeaders.FindAsync(orderHeaderId);
         }
 
         public async Task UpdateAsync(int salesOrderId, OrderHeader orderHeader, int userId)

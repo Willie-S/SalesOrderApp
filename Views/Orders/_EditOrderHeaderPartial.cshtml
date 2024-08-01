@@ -1,0 +1,54 @@
+﻿@model SalesOrderApp.ViewModels.OrdersEditHeaderViewModel
+
+@if (Model != null)
+{
+    <div class="modal" id="editOrderHeaderModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Order Header</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editOrderHeaderForm" method="post" asp-action="EditOrderHeader" asp-controller="Orders">
+                        <input type="hidden" asp-for="SalesOrderId">
+                        <input type="hidden" asp-for="OrderHeaderId">
+
+                        <div class="form-group mt-1">
+                            <label asp-for="OrderHeader.OrderNumber" class="control-label"></label>
+                            <input asp-for="OrderHeader.OrderNumber" class="form-control">
+                            <span asp-validation-for="OrderHeader.OrderNumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-1">
+                            <label asp-for="OrderHeader.OrderType" class="control-label"></label>
+                            <select asp-for="OrderHeader.OrderType" asp-items="Html.GetEnumSelectList<OrderTypeEnum>()" class="form-control"></select>
+                            <span asp-validation-for="OrderHeader.OrderType" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-1">
+                            <label asp-for="OrderHeader.OrderStatus" class="control-label"></label>
+                            <select asp-for="OrderHeader.OrderStatus" asp-items="Html.GetEnumSelectList<OrderStatusEnum>()" class="form-control"></select>
+                            <span asp-validation-for="OrderHeader.OrderStatus" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-1">
+                            <label asp-for="OrderHeader.CustomerName" class="control-label"></label>
+                            <input asp-for="OrderHeader.CustomerName" class="form-control">
+                            <span asp-validation-for="OrderHeader.CustomerName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mt-1">
+                            <label asp-for="OrderHeader.CreateDate" class="control-label"></label>
+                            <input asp-for="OrderHeader.CreateDate" class="form-control" type="date">
+                            <span asp-validation-for="OrderHeader.CreateDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Discard changes</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}

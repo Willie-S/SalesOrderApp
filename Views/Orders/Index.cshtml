@@ -14,6 +14,9 @@
     OrderLines = new List<SalesOrderApp.ViewModels.OrderLineViewModel>()
 })
 
+<div id="editOrderHeaderContainer">
+    @await Html.PartialAsync("_EditOrderHeaderPartial", new SalesOrderApp.ViewModels.OrdersEditHeaderViewModel())
+</div>
 
 @section Scripts {
     <script>
@@ -38,6 +41,24 @@
 
         function placeOrder() {
             $('#addOrderModal').modal('show');
+        }
+
+        function editOrderHeader(orderId, event) {
+            // Prevent triggering the row selection
+            event.stopPropagation();
+
+            $.ajax({
+                url: '@Url.Action("EditOrderHeader", "Orders")',
+                type: 'GET',
+                data: { id: orderId },
+                success: function (result) {
+                    $('#editOrderHeaderContainer').html(result);
+                    $('#editOrderHeaderModal').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    alert('An error occurred while retrieving the order header for editing.');
+                }
+            });
         }
     </script>
 }
