@@ -48,6 +48,7 @@ namespace SalesOrderApp
             builder.Services.AddScoped<UserRepository>();
             builder.Services.AddScoped<XmlUserRepository>();
             builder.Services.AddScoped<SalesOrderRepository>();
+            builder.Services.AddScoped<XmlSalesOrderRepository>();
 
             // Register the additional services
             builder.Services.AddScoped<IDbTransactionService, DbTransactionService>();

@@ -1,4 +1,6 @@
-﻿namespace SalesOrderApp.Models
+﻿using System.Xml.Serialization;
+
+namespace SalesOrderApp.Models
 {
     public class OrderLine : BaseEntity
     {
@@ -12,7 +14,9 @@
         public int SalesOrderId { get; set; }
 
         // Navigation properties
+        [XmlIgnore]
         public ProductType ProductType { get; set; }
+        [XmlIgnore]
         public SalesOrder SalesOrder { get; set; }
     }
 }

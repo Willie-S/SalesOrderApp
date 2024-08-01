@@ -12,11 +12,13 @@ using SalesOrderApp.Repositories;
 public class OrdersController : Controller
 {
     private readonly SalesOrderRepository _salesOrderRepository;
+    private readonly XmlSalesOrderRepository _xmlSalesOrderRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public OrdersController(SalesOrderRepository salesOrderRepository, IHttpContextAccessor httpContextAccessor)
+    public OrdersController(SalesOrderRepository salesOrderRepository, XmlSalesOrderRepository xmlSalesOrderRepository, IHttpContextAccessor httpContextAccessor)
     {
         _salesOrderRepository = salesOrderRepository;
+        _xmlSalesOrderRepository = xmlSalesOrderRepository;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -132,8 +134,13 @@ public class OrdersController : Controller
                 }).ToList()
             };
 
+            // Commit the changes to the SQL DB
             var savedOrder = await _salesOrderRepository.AddAsync(newOrder);
             await _salesOrderRepository.ReassignLineNumbersAsync(savedOrder.Id);
+
+            // Commit the changes to the XML DB
+            var xmlSavedOrder = await _xmlSalesOrderRepository.AddAsync(newOrder);
+            await _xmlSalesOrderRepository.ReassignLineNumbersAsync(xmlSavedOrder.Id);
 
             var salesOrders = await _salesOrderRepository.GetAllByUserIdAsync(userId);
 
@@ -205,8 +212,13 @@ public class OrdersController : Controller
                 Quantity = model.OrderLine.Quantity
             };
 
+            // Commit the changes to the SQL DB
             await _salesOrderRepository.AddOrderLineAsync(model.SalesOrderId, newOrderLine, userId);
             await _salesOrderRepository.ReassignLineNumbersAsync(model.SalesOrderId);
+
+            // Commit the changes to the XML DB
+            await _xmlSalesOrderRepository.AddOrderLineAsync(model.SalesOrderId, newOrderLine, userId);
+            await _xmlSalesOrderRepository.ReassignLineNumbersAsync(model.SalesOrderId);
 
             return RedirectToAction("Index", "Orders", new { selectedOrderId = model.SalesOrderId });
         }
@@ -237,7 +249,11 @@ public class OrdersController : Controller
                 return NotFound("Order not found or you are not authorized to delete this order.");
             }
 
+            // Commit the changes to the SQL DB
             await _salesOrderRepository.DeleteAsync(id);
+
+            // Commit the changes to the XML DB
+            await _xmlSalesOrderRepository.DeleteAsync(id);
 
             var salesOrders = await _salesOrderRepository.GetAllByUserIdAsync(userId);
 
@@ -265,9 +281,14 @@ public class OrdersController : Controller
         try
         {
             var userId = GetCurrentUserId();
-            var deletedLine = await _salesOrderRepository.DeleteOrderLineAsync(id, userId);
 
+            // Commit the changes to the SQL DB
+            var deletedLine = await _salesOrderRepository.DeleteOrderLineAsync(id, userId);
             await _salesOrderRepository.ReassignLineNumbersAsync(deletedLine.SalesOrderId);
+
+            // Commit the changes to the XML DB
+            var xmlDeletedLine = await _xmlSalesOrderRepository.DeleteOrderLineAsync(id, userId);
+            await _xmlSalesOrderRepository.ReassignLineNumbersAsync(xmlDeletedLine.SalesOrderId);
 
             var salesOrders = await _salesOrderRepository.GetAllByUserIdAsync(userId);
             var selectedOrder = deletedLine?.SalesOrderId > 0 ? salesOrders.FirstOrDefault(o => o.Id == deletedLine.SalesOrderId) : null;
@@ -353,7 +374,11 @@ public class OrdersController : Controller
             order.OrderHeader.CustomerName = model.OrderHeader.CustomerName;
             order.OrderHeader.CreateDate = model.OrderHeader.CreateDate;
 
+            // Commit the changes to the SQL DB
             await _salesOrderRepository.UpdateAsync(model.SalesOrderId, order.OrderHeader, userId);
+
+            // Commit the changes to the XML DB
+            await _xmlSalesOrderRepository.UpdateAsync(model.SalesOrderId, order.OrderHeader, userId);
 
             return RedirectToAction("Index", "Orders", new { selectedOrderId = order.Id });
         }
@@ -432,7 +457,11 @@ public class OrdersController : Controller
             line.SalesPrice = model.OrderLine.SalesPrice;
             line.Quantity = model.OrderLine.Quantity;
 
+            // Commit the changes to the SQL DB
             await _salesOrderRepository.UpdateOrderLineAsync(line, userId);
+
+            // Commit the changes to the XML DB
+            await _xmlSalesOrderRepository.UpdateOrderLineAsync(line, userId);
 
             return RedirectToAction("Index", "Orders", new { selectedOrderId = order.Id });
         }

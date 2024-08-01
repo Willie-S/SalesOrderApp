@@ -15,18 +15,18 @@ namespace SalesOrderApp.Repositories
 
         public async Task<User> AddUserAsync(User user)
         {
-            await _context.AddUserAsync(user);
+            _context.Users.Add(user);
             return user;
         }
 
         public async Task<User> GetUserByEmailAsync(string email)
         {
-            return await _context.GetUserByEmailAsync(email);
+            return _context.Users.GetAll().FirstOrDefault(x => x.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
         }
 
         public async Task<bool> EmailExistsAsync(string email)
         {
-            return await _context.EmailExistsAsync(email);
+            return _context.Users.GetAll().Any(x => x.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

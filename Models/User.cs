@@ -1,4 +1,6 @@
-﻿namespace SalesOrderApp.Models
+﻿using System.Xml.Serialization;
+
+namespace SalesOrderApp.Models
 {
     public class User : BaseEntity
     {
@@ -17,6 +19,7 @@
         public int UserRoleId { get; set; }
 
         // Navigation properties
+        [XmlIgnore]
         public UserRole UserRole { get; set; }
     }
 }

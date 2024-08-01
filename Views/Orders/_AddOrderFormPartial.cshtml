@@ -51,7 +51,7 @@
                     <div id="orderLinesFormContainer">
                         <!--  Order lines are dynamically inserted  -->
                     </div>
-                    <button type="button" class="btn btn-success mt-3" id="addOrderLineBtn" onclick="addOrderLine()">Add Order Line</button>
+                    <button type="button" class="btn btn-success mt-3" id="addOrderLineBtn" onclick="addNewOrderLine()">Add Order Line</button>
                     <button type="submit" class="btn btn-primary mt-3">Submit</button>
                 </form>
             </div>
@@ -60,7 +60,7 @@
 </div>
 
 <script>
-    function addOrderLine() {
+    function addNewOrderLine() {
         var lineCount = $('#orderLinesFormContainer .order-line').length;
         var newLine = $('.order-line-template').clone().removeClass('order-line-template').addClass('order-line').show();
         newLine.find('input, select').each(function () {

@@ -16,6 +16,9 @@ namespace SalesOrderApp.Data
         public DbSet<SalesOrder> SalesOrders { get; set; }
         public DbSet<OrderHeader> OrderHeaders { get; set; }
         public DbSet<OrderLine> OrderLines { get; set; }
+        public DbSet<OrderStatus> OrderStatus { get; set; }
+        public DbSet<OrderType> OrderType { get; set; }
+        public DbSet<ProductType> ProductType { get; set; }
 
         #endregion
 
