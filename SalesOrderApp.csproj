@@ -57,4 +57,8 @@
     <PackageReference Include="System.Xml.Linq" Version="3.5.21022.801" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="SqlDbScripts\" />
+  </ItemGroup>
+
 </Project>
