@@ -1,0 +1,13 @@
+﻿@model SalesOrderApp.ViewModels.DogViewModel
+
+@{
+    ViewData["Title"] = "Dog image";
+}
+
+<h2>Random Dog Image</h2>
+<div id="dogImageContainer">
+    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+    {
+        <img src="@Model.ImageUrl" alt="Random Dog Image" class="img-fluid" />
+    }
+</div>
